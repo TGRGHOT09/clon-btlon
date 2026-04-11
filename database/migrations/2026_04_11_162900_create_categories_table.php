@@ -11,24 +11,18 @@ return new class extends Migration
      */
 public function up()
     {
-        Schema::create('users', function (Blueprint $table) {
+        Schema::create('categories', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
-            // 1: Admin, 2: Ứng viên, 3: Nhà tuyển dụng
-            $table->tinyInteger('account_type')->default(2); 
-            $table->rememberToken();
+            $table->string('slug')->unique();
             $table->timestamps();
         });
     }
-
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('categories');
     }
 };
