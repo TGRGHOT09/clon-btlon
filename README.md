@@ -57,13 +57,24 @@ app/
 ├── Models/                         # 6 Models cốt lõi
 │   └── User, Profile, Category, JobPost, Skill, Application
 │
+database/
+├── migrations/                     
+│   ├── 2026_04_10_..._create_categories_table.php  # Bảng danh mục ngành nghề
+│   ├── 2026_04_10_..._create_job_posts_table.php       # Bảng tin tuyển dụng
+│   ├── 2026_04_10_..._create_skills_table.php          # Bảng bộ kỹ năng
+│   ├── 2026_04_10_..._create_applications_table.php  # Bảng nộp đơn ứng tuyển
+│   ├── 2026_04_10_..._create_job_post_skill_table.php  # Bảng trung gian Job-Skill
+│   ├── 2026_04_10_..._create_users_table.php      # Bảng tài khoản người dùng
+│   ├── 2026_04_10_..._create_profiles_table.php        # Bảng hồ sơ ứng viên 
+└── seeders/                        # File sinh dữ liệu mẫu (Fake data)
+│
 resources/
 ├── views/                          # Hệ thống giao diện Blade
 │   ├── admin/                      # Dashboard và thống kê quản trị
 │   ├── auth/                       # Giao diện xác thực (Đăng nhập, Đăng ký)
 │   ├── candidate/                  # Giao diện hồ sơ và việc làm của ứng viên
 │   ├── employer/                   # Giao diện quản lý tin tuyển dụng của NTD
-│   ├── layouts/                    # Bộ khung giao diện dùng chung (Master Layouts)
+│   ├── layouts/                    # Bộ khung giao diện dùng chung
 │   └── public/                     # Trang chủ & Chi tiết việc làm
 │
 routes/
