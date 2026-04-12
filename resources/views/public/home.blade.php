@@ -1,73 +1,99 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="bg-primary text-white py-5 mb-5 rounded-3 shadow-sm mx-3 mt-3">
-    <div class="container text-center py-4">
-        <h1 class="display-5 fw-bold mb-3">Tìm Kiếm Công Việc Ước Mơ Của Bạn</h1>
-        <p class="lead mb-4">Hàng ngàn cơ hội việc làm IT đang chờ đón bạn tại hệ thống OnlineJOB.</p>
+<div class="row mb-5">
+    <div class="col-md-12 text-center py-5 bg-white rounded-4 shadow-sm border-0">
+        <img src="{{ asset('images/onlinejob-logo.png?v=' . time()) }}" alt="" class="mb-3" style="height: 64px; width: auto;">
+        <h1 class="display-5 fw-bold text-dark mb-2">Tìm Kiếm Cơ Hội Nghề Nghiệp</h1>
+        <p class="fw-semibold text-primary mb-2">BTL-CD1</p>
+        <p class="lead text-muted mb-4">Kết nối ứng viên và nhà tuyển dụng</p>
         
         <div class="row justify-content-center">
             <div class="col-md-8">
-                <form action="#" onsubmit="event.preventDefault(); alert('Chức năng Lọc và Tìm kiếm sẽ được demo vào tiến độ tiếp theo!');" class="d-flex bg-white p-2 rounded-pill shadow">
-                    <input type="text" class="form-control border-0 rounded-pill ps-4" placeholder="Nhập tên công việc, kỹ năng..." style="box-shadow: none;">
-                    <button type="submit" class="btn btn-warning rounded-pill px-4 fw-bold">Tìm Việc Ngay</button>
-                </form>
+                <div class="input-group input-group-lg shadow-sm">
+                    <span class="input-group-text bg-white border-0"><i class="bi bi-search text-primary"></i></span>
+                    <input type="text" class="form-control border-0" placeholder="Tên công việc, vị trí bạn mong muốn...">
+                    <button class="btn btn-primary px-5 fw-bold" type="button">Tìm ngay</button>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-<div class="container">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h3 class="fw-bold text-dark"><i class="bi bi-briefcase text-primary me-2"></i>Việc Làm Tuyển Dụng Gấp</h3>
-        <a href="#" class="text-decoration-none">Xem tất cả <i class="bi bi-arrow-right"></i></a>
+<div class="row">
+    <div class="col-md-12 mb-4 d-flex justify-content-between align-items-center">
+        <h4 class="fw-bold mb-0">
+            <i class="bi bi-briefcase-fill text-primary me-2"></i>Việc làm mới nhất
+        </h4>
+        <span class="text-muted">Tổng cộng: <strong>{{ count($job_posts) }}</strong> tin tuyển dụng</span>
     </div>
-
-    <div class="row">
-        @if(isset($job_posts) && $job_posts->count() > 0)
-            @foreach($job_posts as $job)
-            <div class="col-md-6 mb-4">
-                <div class="card h-100 shadow-sm border-0 job-card transition">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between mb-2">
-                            <h5 class="fw-bold text-primary mb-0">{{ $job->title ?? 'Chưa có tiêu đề' }}</h5>
-                            <span class="badge bg-danger rounded-pill px-3 py-2">HOT</span>
-                        </div>
-                        <p class="text-muted small mb-3">
-                            <i class="bi bi-building me-1"></i> {{ $job->user->name ?? 'Công ty Ẩn danh' }} | 
-                            <i class="bi bi-geo-alt me-1"></i> Hà Nội
-                        </p>
-                        
-                        <div class="d-flex gap-2 mb-3">
-                            <span class="badge bg-light text-dark border"><i class="bi bi-cash-coin text-success"></i> Thỏa thuận</span>
-                            <span class="badge bg-light text-dark border"><i class="bi bi-tag text-info"></i> {{ $job->category->name ?? 'Lập trình' }}</span>
+    
+    @forelse($job_posts as $post)
+        <div class="col-md-12 mb-3">
+            <div class="card shadow-sm border-0 p-3 job-item">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-auto d-none d-md-block">
+                            <div class="bg-primary-subtle rounded-3 p-3 text-primary d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                                <i class="bi bi-building fs-1"></i>
+                            </div>
                         </div>
                         
-                        <a href="{{ route('show-post-info', ['id' => $job->id ?? 1]) }}" class="btn btn-outline-primary w-100 fw-bold">Xem Chi Tiết</a>
+                        <div class="col ms-md-3">
+                            <h5 class="fw-bold mb-1">
+                                <a href="{{ route('show-post-info', $post->id) }}" class="text-decoration-none text-dark hover-primary">
+                                    {{ $post->title }}
+                                </a>
+                            </h5>
+                            <p class="mb-2">
+                                <span class="text-primary fw-semibold"><i class="bi bi-building-check me-1"></i>{{ $post->user->name }}</span>
+                                <span class="text-muted ms-3"><i class="bi bi-geo-alt me-1"></i>Hà Nội</span>
+                            </p>
+                            
+                            <div class="d-flex flex-wrap gap-2 mt-2">
+                                <span class="badge bg-light text-primary border border-primary-subtle px-3 py-2">
+                                    <i class="bi bi-tag me-1"></i>{{ $post->category->name }}
+                                </span>
+                                <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2">
+                                    <i class="bi bi-cash-stack me-1"></i>{{ $post->salary }}
+                                </span>
+                                <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-3 py-2">
+                                    <i class="bi bi-clock me-1"></i>Hạn nộp: {{ date('d/m/2026', strtotime($post->expire_date)) }}
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-auto text-end mt-3 mt-md-0">
+                            <a href="{{ route('show-post-info', $post->id) }}" class="btn btn-primary px-4 rounded-pill fw-bold">
+                                Xem chi tiết <i class="bi bi-arrow-right ms-1"></i>
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
-            @endforeach
-        @else
-            <div class="col-md-6 mb-4">
-                <div class="card h-100 shadow-sm border-0">
-                    <div class="card-body">
-                        <h5 class="fw-bold text-primary mb-2">Lập Trình Viên Web (Laravel/VueJS)</h5>
-                        <p class="text-muted small mb-3"><i class="bi bi-building me-1"></i> Công ty TNHH J-One | <i class="bi bi-geo-alt me-1"></i> Hà Nội</p>
-                        <a href="#" class="btn btn-outline-primary w-100 fw-bold">Xem Chi Tiết</a>
-                    </div>
-                </div>
+        </div>
+    @empty
+        <div class="col-12 text-center py-5">
+            <div class="mb-3">
+                <i class="bi bi-inbox text-muted display-1"></i>
             </div>
-            <div class="col-md-6 mb-4">
-                <div class="card h-100 shadow-sm border-0">
-                    <div class="card-body">
-                        <h5 class="fw-bold text-primary mb-2">Kỹ Sư Cầu Nối (BrSE) - Tiếng Nhật N2</h5>
-                        <p class="text-muted small mb-3"><i class="bi bi-building me-1"></i> Tập Đoàn ABC | <i class="bi bi-geo-alt me-1"></i> Đà Nẵng</p>
-                        <a href="#" class="btn btn-outline-primary w-100 fw-bold">Xem Chi Tiết</a>
-                    </div>
-                </div>
-            </div>
-        @endif
-    </div>
+            <h5 class="text-muted">Hiện chưa có tin tuyển dụng nào phù hợp.</h5>
+            <p class="text-muted">Hãy quay lại sau hoặc thử tìm kiếm với từ khóa khác.</p>
+        </div>
+    @endforelse
 </div>
+
+<style>
+    .job-item {
+        transition: all 0.3s ease;
+    }
+    .job-item:hover {
+        transform: scale(1.01);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.08) !important;
+        border-left: 5px solid #0d6efd !important;
+    }
+    .hover-primary:hover {
+        color: #0d6efd !important;
+    }
+</style>
 @endsection

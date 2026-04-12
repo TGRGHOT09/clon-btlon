@@ -11,17 +11,16 @@ use Illuminate\Support\Facades\Hash;
 class AuthController extends Controller
 {
     // --- HIỂN THỊ GIAO DIỆN LOGIN RIÊNG BIỆT ---
-    
-    public function showLogin() {
-        return view('auth.login'); // Giao diện cho Ứng viên
+public function showLogin() {
+        return view('auth.login'); // Trả về form Ứng viên
     }
 
     public function showLoginEmployer() {
-        return view('employer.login'); // Giao diện cho Nhà tuyển dụng
+        return view('employer.login'); // Trả về form màu xanh lá của NTD
     }
 
     public function showLoginAdmin() {
-        return view('admin.login'); // Giao diện cho Admin
+        return view('admin.login'); 
     }
 
     // --- XỬ LÝ LOGIC ĐĂNG NHẬP CHUNG ---
