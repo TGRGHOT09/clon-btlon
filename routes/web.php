@@ -1,109 +1,94 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
-// Trỏ đúng Namespace cho các Controller trong thư mục con
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Developer\DeveloperController;
 use App\Http\Controllers\Employer\EmployerController;
-use App\Http\Controllers\Employer\JobPostController;
-use App\Http\Controllers\Candidate\CandidateController;
-use App\Http\Controllers\Candidate\ApplicationController;
+use App\Http\Controllers\Employer\RecruitmentController;
+use App\Http\Controllers\Developer\ProfileController;
+use App\Http\Controllers\Admin\AdminController;
 
 /*
 |--------------------------------------------------------------------------
-| WEB ROUTES - Online JOB
+| Web Routes
 |--------------------------------------------------------------------------
-|Chức năng: Phân quyền Admin, Nhà tuyển dụng, Ứng viên
 */
 
-// =========================================================================
-// 1. CỤM PUBLIC (DÀNH CHO KHÁCH XEM)
-// =========================================================================
-Route::get('/', [JobPostController::class, 'index'])->name('home');
-Route::get('/chi-tiet-viec-lam/{id}', [JobPostController::class, 'show'])->name('show-post-info');
+// 1. TRANG CHỦ: Ưu tiên dùng DeveloperController để hiện danh sách việc làm ngay khi vào web
+Route::get('/', [DeveloperController::class, 'index'])->name('developer');
 
-// Điều hướng mặc định của Laravel về trang chủ
+Auth::routes();
+
+// 2.Chuyển hướng /home về trang chủ vì bạn không có HomeController
 Route::get('/home', function () {
-    return redirect()->route('home');
-});
+    return redirect('/');
+})->name('home');
 
-
-// =========================================================================
-// 2. CỤM AUTH (ĐĂNG NHẬP / ĐĂNG KÝ RIÊNG BIỆT)
-// =========================================================================
-
-// --- Cho Ứng viên ---
-Route::get('login', [AuthController::class, 'showLogin'])->name('login');
-Route::post('login', [AuthController::class, 'login']);
-Route::get('register', [AuthController::class, 'showRegister'])->name('register');
-Route::post('register', [AuthController::class, 'register']);
-Route::match(['get', 'post'], 'logout', [AuthController::class, 'logout'])->name('logout');
-
-// --- Cho Nhà tuyển dụng (Prefix: employer) ---
-Route::prefix('employer')->group(function () {
-    Route::get('login', [AuthController::class, 'showLoginEmployer'])->name('show-login-emp');
-    Route::get('register', [AuthController::class, 'showRegister'])->name('show-register-emp');
-    // Lưu ý: Các xử lý POST dùng chung logic trong AuthController
-    Route::post('login', [AuthController::class, 'login'])->name('login-emp');
-    Route::post('register', [AuthController::class, 'register'])->name('register-emp');
-});
-
-// --- Cho Quản trị viên (Prefix: adm) ---
-Route::prefix('adm')->group(function () {
-    Route::get('login', [AuthController::class, 'showLoginAdmin'])->name('show-login-admin');
-    Route::post('login', [AuthController::class, 'login'])->name('login-admin');
-});
-
-
-// =========================================================================
-// 3. CỤM CANDIDATE (ỨNG VIÊN - ĐÃ ĐĂNG NHẬP)
-// =========================================================================
+// --- CÁC ROUTE DÀNH CHO NGƯỜI TÌM VIỆC (ĐÃ ĐĂNG NHẬP) ---
 Route::middleware(['auth'])->group(function () {
-    // Quản lý hồ sơ & CV
-    Route::get('tai-khoan', [CandidateController::class, 'profile'])->name('show-account');
-    Route::put('tai-khoan/cap-nhat', [CandidateController::class, 'updateProfile'])->name('account');
+    Route::get('tai-khoan',[DeveloperController::class,'showAccount'])->name('show-account');
+    Route::put('tao',[DeveloperController::class,'account'])->name('account');
+    Route::get('viec-da-luu',[DeveloperController::class,'save_post'])->name('save-post');
+    Route::get('viec-ung-tuyen',[DeveloperController::class,'listRecruitment'])->name('recruitment-list');
+    Route::post('apply',[DeveloperController::class,'apply'])->name('apply');
+    Route::post('remove-notify',[DeveloperController::class,'removeNotify'])->name('remove-notify');
     
-    // Quản lý việc làm
-    Route::get('viec-da-ung-tuyen', [CandidateController::class, 'appliedJobs'])->name('recruitment-list');
-    Route::post('nop-don/{job_post_id}', [ApplicationController::class, 'apply'])->name('apply');
+    Route::resource('/cv',ProfileController::class);
+    Route::delete('delete-exp',[ProfileController::class,'deleteExp'])->name('delete-exp');
+    Route::get('cv/pdf/{id}',[ProfileController::class,'print_profile'])->name('print-pdf');
+
+    Route::get('testMailAuto',[DeveloperController::class,'testMailAuto'])->name('testMailAuto');
 });
 
+// --- CÁC ROUTE TÌM KIẾM CÔNG KHAI ---
+Route::get('tim-viec/{slug}',[DeveloperController::class,'post_info'])->name('show-post-info');
+Route::post('tim-kiem',[DeveloperController::class,'search'])->name('search');
+Route::post('tim-kiem-nc',[DeveloperController::class,'search_high'])->name('search_high');
+Route::get('get-more-post',[DeveloperController::class,'getMorePost'])->name('get-more-post');
 
-// =========================================================================
-// 4. CỤM EMPLOYER (NHÀ TUYỂN DỤNG - MIDDLEWARE: empl)
-// =========================================================================
-Route::prefix('employer')->middleware(['auth', 'empl'])->group(function () {
-    // Dashboard & Thống kê
-    Route::get('/dashboard', [EmployerController::class, 'dashboard'])->name('empl');
+// --- CÁC ROUTE DÀNH CHO NHÀ TUYỂN DỤNG (PREFIX: employer) ---
+Route::prefix('employer')->group(function (){
+    Route::middleware('empl')->group(function (){
+        Route::get('/', [EmployerController::class, 'index'])->name('empl');
+        Route::get('tai-khoan',[EmployerController::class,'showAccount'])->name('show-account-epl');
+        Route::put('update_account_employer',[EmployerController::class,'account'])->name('account-epl');
+        Route::post('remove-notify',[EmployerController::class,'removeNotify'])->name('remove-notify-empl');
 
-    // Quản lý Tin tuyển dụng (CRUD)
-    Route::get('/post/create', [JobPostController::class, 'create'])->name('employer.job.create');
-    Route::post('/post/store', [JobPostController::class, 'store'])->name('employer.job.store');
-    Route::get('/post/{id}/edit', [JobPostController::class, 'edit'])->name('employer.job.edit');
-    Route::put('/post/{id}', [JobPostController::class, 'update'])->name('employer.job.update');
-    Route::delete('/post/{id}', [JobPostController::class, 'destroy'])->name('employer.job.destroy');
+        Route::resource('/post',RecruitmentController::class);
+        Route::get('/update-status-post',[EmployerController::class,'statusPost'])->name('update-status-post');
+        Route::get('/update-status-candidate',[EmployerController::class,'statusCandidate'])->name('update-status-candidate');
+        Route::get('/filer-status',[EmployerController::class,'filterStatus'])->name('filter-status');
+        Route::post('/xuat-excel',[EmployerController::class,'exportExcel'])->name('export-excel');
 
-    // Quản lý Ứng viên & Duyệt hồ sơ
-    Route::get('/danh-sach-ung-vien', [EmployerController::class, 'applicants'])->name('show-candidate');
-    Route::post('/duyet-ho-so/{id}', [ApplicationController::class, 'updateStatus'])->name('update-status-candidate');
+        Route::get('/ung-vien',[EmployerController::class,'showCandidate'])->name('show-candidate');
+        Route::delete('/delete-candidate/{id}',[EmployerController::class,'deleteCandidate'])->name('delete-candidate');
+        Route::get('/sendMail',[EmployerController::class,'sendMail'])->name('send-mail');
+
+        Route::get('/thong-ke',[EmployerController::class,'showStatistic'])->name('show-statistic');
+        Route::post('/statistics-candidate',[EmployerController::class,'statisticsCandidate'])->name('statistics-candidate');
+
+        Route::get('logout',[AuthController::class,'logout'])->name('logout-emp');
+    });
+
+    Route::get('login',[AuthController::class,'showFormLogin'])->name('show-login-emp');
+    Route::post('login',[AuthController::class,'login'])->name('login-emp');
+    Route::get('register',[AuthController::class,'showFormRegister'])->name('show-register-emp');
+    Route::post('register',[AuthController::class,'register'])->name('register-emp');
 });
 
+// --- CÁC ROUTE DÀNH CHO QUẢN TRỊ VIÊN (PREFIX: adm) ---
+Route::prefix('adm')->group(function (){
+    Route::middleware('admin')->group(function (){
+        Route::get('/',[AdminController::class,'index'])->name('admin');
+        Route::get('/tai-khoan-nguoi-tim-viec',[AdminController::class,'showUserDeveloper'])->name('show-user-developer');
+        Route::get('/tai-khoan-nha-tuyen-dung',[AdminController::class,'showUserEmployer'])->name('show-user-employer');
+        Route::get('/update-status',[AdminController::class,'updateStatus'])->name('update-status');
+        Route::get('/tai-khoan-nha-tuyen-dung/{id}',[AdminController::class,'infoUserEmployer'])->name('info-user-employer');
+        Route::get('/dang-thong-bao',[AdminController::class,'showPostNotice'])->name('show-post-notice');
+        Route::post('/create-notice',[AdminController::class,'createNotice'])->name('create-notice');
+        Route::get('logout',[AuthController::class,'logoutAdmin'])->name('logout-admin');
+    });
 
-// =========================================================================
-// 5. CỤM ADMIN (QUẢN TRỊ VIÊN - MIDDLEWARE: admin)
-// =========================================================================
-Route::prefix('adm')->middleware(['auth', 'admin'])->group(function () {
-    // Dashboard quản trị tổng thể
-    Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin');
-
-    Route::get('/user/{id}/chi-tiet', [AdminController::class, 'userDetail'])->name('admin.user.detail');
-    
-    // Quản lý trạng thái User (Khóa/Mở)
-    Route::post('/user/status/{id}', [AdminController::class, 'toggleUserStatus'])->name('update-status');
-    
-    // Quản lý Danh mục (Category)
-    Route::post('/category/store', [AdminController::class, 'storeCategory'])->name('admin.category.store');
-    Route::put('/category/update/{id}', [AdminController::class, 'updateCategory'])->name('admin.category.update');
-    Route::delete('/category/delete/{id}', [AdminController::class, 'destroyCategory'])->name('admin.category.destroy');
+    Route::get('login',[AuthController::class,'showFormLoginAdmin'])->name('show-login-admin');
+    Route::post('login',[AuthController::class,'loginAdmin'])->name('login-admin');
 });

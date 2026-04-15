@@ -17,14 +17,13 @@ class EmployerLoginMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
-        if (! Auth::check()) {
+        if(Auth::check()){
+            if (Auth::user()->account_type == 3){
+                return $next($request);
+            }
+
             return redirect()->route('show-login-emp');
         }
-
-        if (Auth::user()->account_type == 3) {
-            return $next($request);
-        }
-
-        return redirect()->route('show-login-emp');
+        return $next($request);
     }
 }

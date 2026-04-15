@@ -1,39 +1,56 @@
-@extends('layouts.app')
+@extends('.layouts.auth_Employer')
 
 @section('content')
-<div class="row justify-content-center align-items-center" style="min-height: 70vh;">
-    <div class="col-md-5">
-        <div class="card shadow border-0 border-top border-4 border-success">
-            <div class="card-body p-5">
-                <div class="text-center mb-4">
-                    <div class="d-inline-block bg-white rounded-3 p-2 shadow-sm mb-3">
-                        <img src="{{ asset('images/onlinejob-logo.png?v=' . time()) }}" alt="" style="height: 56px; width: auto;">
-                    </div>
-                    <h3 class="fw-bold text-success">KÊNH TUYỂN DỤNG</h3>
-                    <p class="text-muted">Đăng nhập để quản lý tin đăng và tìm kiếm ứng viên</p>
+
+    <div class="col-sm-8">
+        <div class="sign-in">
+            <div class=" my-5">
+                <div class="employer-content">
+                    <a class="select-btn active-em" >
+                        <span>Đăng nhập</span>
+                    </a>
+
+                    <a class="select-btn " href="{{route('show-register-emp')}}">
+                        <span>Đăng ký</span>
+                    </a>
                 </div>
 
-                <form action="{{ route('login-emp') }}" method="POST">
-                    @csrf
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold text-success">Email Doanh nghiệp</label>
-                        <input type="email" name="email" class="form-control bg-light p-3 border-0" placeholder="hr@ten-cong-ty.com" required>
-                    </div>
+                <div class="employer-content-info px-5">
+                    <h2 class="content-title m-0 py-5">Đăng nhập tài khoản</h2>
 
-                    <div class="mb-4">
-                        <label class="form-label fw-semibold text-success">Mật khẩu</label>
-                        <input type="password" name="password" class="form-control bg-light p-3 border-0" placeholder="••••••••" required>
-                    </div>
+                    <form action="{{route('login-emp')}}" method="post">
+                        @csrf
+                        <input type="hidden" value="3" name="account_type">
 
-                    <button type="submit" class="btn btn-success w-100 py-3 fw-bold shadow-sm rounded-3">TRUY CẬP QUẢN TRỊ</button>
-                </form>
+                        @if(session('error'))
+                            <span class="text text-danger">{{session('error')}}</span>
+                        @endif
 
-                <div class="text-center mt-4">
-                    <hr class="text-muted opacity-25">
-                    <p class="small text-muted">Đối tác mới? <a href="{{ route('show-register-emp') }}" class="text-success fw-bold text-decoration-none">Đăng ký gian hàng tuyển dụng</a></p>
+                        <div class="mb-3 ">
+                            <label class="form-label fw-bold">Địa chỉ Email <span>*</span> </label>
+                            <input type="email" name="email" value="{{old('email')}}" class="form-control py-2" placeholder="name@gmail.com">
+
+                            @if($errors->has('email'))
+                                <span class="text text-danger">{{$errors->first('email')}}</span>
+                            @endif
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Mật khẩu <span>*</span></label>
+                            <input type="password" name="password" value="{{old('password')}}" class="form-control py-2" placeholder="**********">
+
+                            @if($errors->has('password'))
+                                <span class="text text-danger">{{$errors->first('password')}}</span>
+                            @endif
+                        </div>
+
+                        <div class="my-4">
+                            <input class="btn btn-submit w-100 px-4 py-2" type="submit" value="Đăng nhập">
+                        </div>
+                    </form>
                 </div>
+
             </div>
         </div>
     </div>
-</div>
+
 @endsection

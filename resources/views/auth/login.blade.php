@@ -1,52 +1,74 @@
-@extends('layouts.app')
+
+@extends('layouts.main')
 
 @section('content')
-<div class="row justify-content-center align-items-center" style="min-height: 70vh;">
-    <div class="col-md-5">
-        <div class="card shadow border-0">
-            <div class="card-body p-5">
-                <div class="text-center mb-4">
-                    <div class="d-inline-block bg-light rounded-3 p-2 shadow-sm mb-3">
-                        <img src="{{ asset('images/onlinejob-logo.png?v=' . time()) }}" alt="" style="height: 56px; width: auto;">
+
+    <div class="container">
+        <div class="content py-5 px-5">
+            <div class="row">
+                <div class="col-6">
+                    <div class="content-left">
+                        <h3 class="content__head mb-4">
+                            Chào mừng đến
+                            <img src="{{url('users')}}/img/logo-black.png" alt="" class="content__head-logo">
+                        </h3>
+
+                        <div class="content-box">
+                            <div class="content__select">
+                                <a class="content__select-btn active-btn" >
+                                    <span>Đăng nhập</span>
+                                </a>
+
+                                <a class="content__select-btn" href="{{url('register')}}">
+                                    <span>Đăng ký</span>
+                                </a>
+                            </div>
+
+                            <h2 class="content-title my-4">Đăng nhập tài khoản</h2>
+
+                            <div class="content-validation px-5">
+                                <form action="{{route('login')}}" method="post">
+                                    @csrf
+                                    <input type="hidden" value="2" name="account_type">
+
+                                    <div class="mb-3">
+                                        <label class="form-label">Địa chỉ Email <span>*</span> </label>
+                                        <input type="email" name="email" class="form-control "  id="email" value="{{old('email')}}" placeholder="name@gmail.com">
+                                        @if($errors->has('email'))
+                                            <span class="text text-danger">{{$errors->first('email')}}</span>
+                                        @endif
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Mật khẩu <span>*</span></label>
+                                        <input type="password" name="password" class="form-control"  id="password" value="{{old('password')}}" placeholder="**********">
+                                        @if($errors->has('password'))
+                                            <span class="text text-danger">{{$errors->first('password')}}</span>
+                                        @endif
+                                    </div>
+
+                                    <div class="my-4">
+                                        <input class="btn btn-submit w-100 px-4" type="submit" value="Đăng nhập">
+                                    </div>
+                                </form>
+                            </div>
+
+                            <div class="text-center">
+                                <p>
+                                    {{--                                    Bạn chưa có tài khoản?--}}
+                                    <a href="" class="signup-link">Bạn quên mật khẩu</a>
+                                </p>
+
+                            </div>
+                        </div>
                     </div>
-                    <h3 class="fw-bold">Ứng Viên Đăng Nhập</h3>
-                    <p class="text-muted">Chào mừng bạn quay trở lại</p>
                 </div>
-
-                <form action="{{ route('login') }}" method="POST">
-                    @csrf
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Email của bạn</label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-light border-end-0"><i class="bi bi-envelope text-muted"></i></span>
-                            <input type="email" name="email" class="form-control border-start-0 ps-0 bg-light" placeholder="email@vi-du.com" required autofocus>
-                        </div>
+                <div class="col-6">
+                    <div class="content-right px-3 my-auto">
+                        <img src="{{url('users')}}/img/img1.png" alt="">
                     </div>
-
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Mật khẩu</label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-light border-end-0"><i class="bi bi-shield-lock text-muted"></i></span>
-                            <input type="password" name="password" class="form-control border-start-0 ps-0 bg-light" placeholder="••••••••" required>
-                        </div>
-                    </div>
-
-                    <div class="d-flex justify-content-between mb-4 small">
-                        <div class="form-check">
-                            <input type="checkbox" class="form-check-input" id="remember" name="remember">
-                            <label class="form-check-label" for="remember">Ghi nhớ tôi</label>
-                        </div>
-                        <a href="#" class="text-primary text-decoration-none">Quên mật khẩu?</a>
-                    </div>
-
-                    <button type="submit" class="btn btn-primary w-100 py-3 fw-bold shadow-sm">ĐĂNG NHẬP NGAY</button>
-                </form>
-
-                <div class="text-center mt-4">
-                    <p class="text-muted mb-0">Chưa có tài khoản? <a href="{{ route('register') }}" class="text-primary fw-bold text-decoration-none">Đăng ký thành viên</a></p>
                 </div>
             </div>
         </div>
     </div>
-</div>
+
 @endsection

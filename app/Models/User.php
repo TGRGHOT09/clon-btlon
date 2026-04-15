@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -12,47 +13,53 @@ class User extends Authenticatable
     use HasApiTokens, HasFactory, Notifiable;
 
     /**
-     * Các cột được phép thêm dữ liệu
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
      */
     protected $fillable = [
         'name',
         'email',
         'password',
-        'account_type', // 1: Admin, 2: Ứng viên, 3: NTD
+        'account_type',
         'status',
+        'company',
+        'website',
+        'phone_number',
+        'address',
+        'image',
+
     ];
 
     /**
-     * Các cột bị ẩn đi khi truy vấn (Bảo mật)
+     * The attributes that should be hidden for serialization.
+     *
+     * @var array<int, string>
      */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
 
-    // ==========================================
-    // KHAI BÁO CÁC MỐI QUAN HỆ (RELATIONSHIPS)
-    // ==========================================
-
-    // 1 User (Ứng viên) 
-    public function profile()
-    {
-        return $this->hasOne(Profile::class);
+    public function profile(){
+        return $this->hasMany(Profile::class,'user_id','id');
     }
 
-    // 1 User (Nhà tuyển dụng) có nhiều Bài đăng (1-N)
-    public function jobPosts()
-    {
-        return $this->hasMany(JobPost::class);
+    public function recruitment(){
+        return $this->hasMany(Recruitment::class,'user_id','id');
     }
 
-    // 1 User (Ứng viên) có nhiều Đơn ứng tuyển (1-N)
-    public function applications()
-    {
-        return $this->hasMany(Application::class);
+    public function applyList(){
+        return $this->hasMany(ApplyList::class,'user_id','id');
     }
+
 }
